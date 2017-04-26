@@ -20,7 +20,7 @@ spec:
           capabilities:
             add:
               - IPC_LOCK
-        image: quay.io/pires/docker-elasticsearch-kubernetes:1.7.1-4
+        image: quay.io/pires/docker-elasticsearch-kubernetes:5.3.0
         env:
         - name: KUBERNETES_CA_CERTIFICATE_FILE
           value: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
@@ -40,7 +40,19 @@ spec:
           protocol: TCP
         volumeMounts:
         - mountPath: /data
-          name: storage
+          name: es-data
       volumes:
-      - name: storage
-        emptyDir: {}
+      - name: es-data
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: es-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 5Gi
+  hostPath:
+    path: /data/es-data/
